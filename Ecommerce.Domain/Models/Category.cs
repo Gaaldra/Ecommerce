@@ -7,45 +7,39 @@ public class Category
 {
     public int Id { get; init; }
     public string Name { get; private set; } = string.Empty;
-    public Category? Subcategory { get; private set; }
+    public Category? ParentCategory { get; private set; }
 
     private Category() { }
 
-    public static Category Create(string name)
+    public static Category Create(string name, Category? parentCategory)
     {
-        CategoryArgumentException.ThrowIfNullOrWhiteSpace(name);
+        if (string.IsNullOrWhiteSpace(name)) throw new CategoryArgumentException("A category name cannot be empty.", nameof(name));
 
-        return new Category { Name = name };
-    }
-
-    public static Category Create(string name, Category subCategory)
-    {
-        Category category = Create(name);
-
-        category.SetSubcategory(subCategory);
-
+        var category = new Category { Name = name };
+        category.SetParentCategory(parentCategory);
+        
         return category;
     }
 
     public void UpdateName(string newName)
     {
-        CategoryArgumentException.ThrowIfNullOrWhiteSpace(newName);
+        if (string.IsNullOrWhiteSpace(newName)) throw new CategoryArgumentException("A category name cannot be empty.", nameof(newName));
 
         if (Name == newName) return;
 
         Name = newName;
     }
 
-    public void SetSubcategory(Category? newSubcategory)
+    public void SetParentCategory(Category? newParentCategory)
     {
-        if(newSubcategory == null)
+        if(newParentCategory == null)
         {
-            Subcategory = null;
+            ParentCategory = null;
             return;
         }
 
-        if (newSubcategory == this) throw new CategoryArgumentException("A category cannot be its own subcategory.", nameof(newSubcategory));
+        if (newParentCategory == this) throw new CategoryArgumentException("A category cannot be its own subcategory.", nameof(newParentCategory));
 
-        Subcategory = newSubcategory;
+        ParentCategory = newParentCategory;
     }
 }
